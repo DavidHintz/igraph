@@ -29,7 +29,7 @@
 
 #include <limits.h>
 
-#include "igraph_attributes.h"
+#include "igraph_neighborhood.h"
 
 static igraph_error_t igraph_i_personalized_pagerank_arpack(const igraph_t* graph,
     igraph_vector_t* vector,
@@ -721,6 +721,43 @@ static igraph_error_t igraph_i_personalized_pagerank_arpack(const igraph_t* grap
     igraph_matrix_destroy(&vectors);
     igraph_matrix_destroy(&values);
     IGRAPH_FINALLY_CLEAN(2);
+
+    return IGRAPH_SUCCESS;
+}
+
+igraph_error_t igraph_finalize_linkrank(const igraph_t* graph,
+    igraph_vector_t* vector, const igraph_vs_t vids,
+    igraph_bool_t directed, const igraph_vector_t* weights) {
+
+    igraph_integer_t i, j;
+    igraph_integer_t no_of_edges = igraph_ecount(graph);
+    igraph_vector_init(igraph_vector_t *pageranks, igraph_integer_t no_of_edges);
+    igraph_vector_swap(igraph_vector_t *pageranks, igraph_vector_t *vector);
+
+    igraph_vector_init(igraph_vector_t *res, igraph_integer_t 1);
+
+    igraph_neighborhood(const igraph_t *graph, igraph_vector_int_list_t *res,
+        igraph_vs_t vids, igraph_integer_t 1,
+        igraph_neimode_t IGRAPH_OUT, igraph_integer_t 1);
+
+    igraph_vector_init(igraph_vector_t *str, igraph_integer_t 1);
+
+    igraph_strength(const igraph_t *graph, igraph_vector_t *str,
+        const igraph_vs_t vids, igraph_neimode_t IGRAPH_OUT,
+        igraph_bool_t false, const igraph_vector_t *weights);
+
+    for (i = 0; i < igraph_vector_size(const igraph_vector_t *pageranks); i++) {
+        for (j = 0; j < igraph_vector_size(const igraph_vector_t * res); j++) {
+
+            VECTOR(*vector)[j] = VECTOR(*pageranks)[i];
+            VECTOR(*vector)[j] /= VECTOR(*str)[i];
+
+            if (weights)
+            {
+                VECTOR(*vector)[j] *= VECTOR(*weights)[j];
+            }
+        }
+    }
 
     return IGRAPH_SUCCESS;
 }
