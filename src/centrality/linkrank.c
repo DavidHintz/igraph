@@ -198,21 +198,21 @@ static igraph_error_t pagerank_operator_weighted(igraph_real_t* to, const igraph
 }
 
 /**
- * \function igraph_pagerank
- * \brief Calculates the Google PageRank for the specified vertices.
+ * \function igraph_linkrank
+ * \brief Calculates the LinkRank for the specified vertices.
  *
- * The PageRank centrality of a vertex is the fraction of time a
- * random walker traversing the graph would spend on that vertex.
- * The walker follows the out-edges with probabilities proportional
- * to their weights. Additionally, in each step, it restarts the walk
- * from a random vertex with probability <code>1 - damping</code>.
- * If the random walker gets stuck in a sink vertex, it will also restart
- * from a random vertex.
+ * LinkRank is the equivalent of PageRank for edges. The LinkRank of an edge is the
+ * relative frequency of traversing that edge by a random walker. For a detailed
+ * description of the random walk process, see the PageRank section.
  *
- * </para><para>
- * The PageRank centrality is mainly useful for directed graphs. In undirected
- * graphs it converges to trivial values proportional to degrees as the damping
- * factor approaches 1.
+ * The LinkRank of edges can be computed from the PageRank by simply dividing the
+ * PageRank of each vertex between its outgoing edges, proportionally with their
+ * edge weights. The LinkRank scores of the out-edges of a vertex add up to the
+ * PageRank of that vertex. The LinkRank scores of all edges in the graph add up
+ * to 1.
+ *
+ * Weighted graphs and multigraphs are supported, and self-loops are taken into
+ * consideration.
  *
  * </para><para>
  * Starting from version 0.9, igraph has two PageRank implementations,
@@ -226,20 +226,21 @@ static igraph_error_t pagerank_operator_weighted(igraph_real_t* to, const igraph
  * scores.
  *
  * </para><para>
- * Note that the PageRank of a given vertex depends on the PageRank
- * of all other vertices, so even if you want to calculate the PageRank for
- * only some of the vertices, all of them must be calculated. Requesting
- * the PageRank for only some of the vertices does not result in any
+ * Note that the LinkRank of a given edge depends on the PageRank
+ * of all vertices, so even if you want to calculate the LinkRank for
+ * only some of the vertices' edges, all of them must be calculated. Requesting
+ * the LinkRank for only some of the vertices' edges does not result in any
  * performance increase at all.
  *
  * </para><para>
  * References:
  *
  * </para><para>
- * Sergey Brin and Larry Page: The Anatomy of a Large-Scale Hypertextual
- * Web Search Engine. Proceedings of the 7th World-Wide Web Conference,
- * Brisbane, Australia, April 1998.
- * https://doi.org/10.1016/S0169-7552(98)00110-X
+ * Youngdo Kim, Seung-Woo Son, and Hawoong Jeong: LinkRank: Finding communities
+ * in directed networks. Physics and Society, November 2009.
+ * https://doi.org/10.48550/arXiv.0902.3728
+ *
+ * http://szhorvat.net/mathematica/IGDocumentation/#pagerank
  *
  * \param graph The graph object.
  * \param algo The PageRank implementation to use. Possible values:
@@ -251,8 +252,8 @@ static igraph_error_t pagerank_operator_weighted(igraph_real_t* to, const igraph
  *    expected to be exactly one. Checking this value can be used to diagnose cases
  *    when ARPACK failed to converge to the leading eigenvector.
  *    When using \c IGRAPH_PAGERANK_ALGO_PRPACK, this is always set to 1.0.
- * \param vids The vertex IDs for which the PageRank is returned. This parameter
- *    is only for convenience. Computing PageRank for fewer than all vertices will
+ * \param vids The vertex IDs for which the LinkRank is returned. This parameter
+ *    is only for convenience. Computing LinkRank for fewer than all vertices will
  *    not speed up the calculation.
  * \param directed Boolean, whether to consider the directedness of
  *    the edges. This is ignored for undirected graphs.
@@ -273,13 +274,6 @@ static igraph_error_t pagerank_operator_weighted(igraph_real_t* to, const igraph
  *
  * Time complexity: depends on the input graph, usually it is O(|E|),
  * the number of edges.
- *
- * \sa \ref igraph_personalized_pagerank() and \ref igraph_personalized_pagerank_vs()
- * for the personalized PageRank measure. See \ref igraph_arpack_rssolve() and
- * \ref igraph_arpack_rnsolve() for the underlying machinery used by
- * \c IGRAPH_PAGERANK_ALGO_ARPACK.
- *
- * \example examples/simple/igraph_pagerank.c
  */
 
 igraph_error_t igraph_pagerank(const igraph_t* graph, igraph_pagerank_algo_t algo,
