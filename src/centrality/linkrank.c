@@ -287,10 +287,10 @@ igraph_error_t igraph_linkrank(const igraph_t* graph, igraph_pagerank_algo_t alg
 }
 
 /**
- * \function igraph_personalized_pagerank_vs
- * \brief Calculates the personalized Google PageRank for the specified vertices.
+ * \function igraph_personalized_linkrank_vs
+ * \brief Calculates the personalized LinkRank for the specified vertices.
  *
- * The personalized PageRank is similar to the original PageRank measure, but
+ * The personalized LinkRank is similar to the original LinkRank measure, but
  * when the random walk is restarted, a new starting vertex is chosen according to
  * a specified distribution.
  * This distribution is used both when restarting randomly with probability
@@ -321,17 +321,16 @@ igraph_error_t igraph_linkrank(const igraph_t* graph, igraph_pagerank_algo_t alg
  *    expected to be exactly one. Checking this value can be used to diagnose cases
  *    when ARPACK failed to converge to the leading eigenvector.
  *    When using \c IGRAPH_PAGERANK_ALGO_PRPACK, this is always set to 1.0.
- * \param vids The vertex IDs for which the PageRank is returned. This parameter
- *    is only for convenience. Computing PageRank for fewer than all vertices will
+ * \param vids The vertex IDs for which the LinkRank is returned. This parameter
+ *    is only for convenience. Computing LinkRank for fewer than all vertices will
  *    not speed up the calculation.
  * \param directed Boolean, whether to consider the directedness of
  *    the edges. This is ignored for undirected graphs.
  * \param damping The damping factor ("d" in the original paper).
  *    Must be a probability in the range [0, 1]. A commonly used value is 0.85.
- * \param reset_vids IDs of the vertices used when resetting the random walk.
- * \param weights Optional edge weights, it is either a null pointer,
- *    then the edges are not weighted, or a vector of the same length
- *    as the number of edges.
+ * \param weights Optional edge weights. May be a \c NULL pointer,
+ *    meaning unweighted edges, or a vector of non-negative values
+ *    of the same length as the number of edges.
  * \param options Options for the ARPACK method. See \ref igraph_arpack_options_t
  *    for details. Supply \c NULL here to use the defaults. Note that the function
  *    overwrites the <code>n</code> (number of vertices), <code>nev</code> (1),
@@ -339,16 +338,11 @@ igraph_error_t igraph_linkrank(const igraph_t* graph, igraph_pagerank_algo_t alg
  *    starts the calculation from a non-random vector calculated based on the
  *    degree of the vertices.
  * \return Error code:
- *         \c IGRAPH_ENOMEM, not enough memory for
- *         temporary data.
- *         \c IGRAPH_EINVVID, invalid vertex ID in
- *         \p vids or an empty reset vertex sequence in
- *         \p vids_reset.
+ *         \c IGRAPH_ENOMEM, not enough memory for temporary data.
+ *         \c IGRAPH_EINVVID, invalid vertex ID in \p vids.
  *
  * Time complexity: depends on the input graph, usually it is O(|E|),
  * the number of edges.
- *
- * \sa \ref igraph_pagerank() for the non-personalized implementation.
  */
 
 igraph_error_t igraph_personalized_linkrank_vs(const igraph_t* graph,
@@ -387,23 +381,23 @@ igraph_error_t igraph_personalized_linkrank_vs(const igraph_t* graph,
 }
 
 /**
- * \function igraph_personalized_pagerank
- * \brief Calculates the personalized Google PageRank for the specified vertices.
+ * \function igraph_personalized_linkrank
+ * \brief Calculates the personalized LinkRank for the specified vertices.
  *
- * The personalized PageRank is similar to the original PageRank measure, but
+ * The personalized LinkRank is similar to the original LinkRank measure, but
  * when the random walk is restarted, a new starting vertex is chosen non-uniformly,
  * according to the distribution specified in \p reset
- * (instead of the uniform distribution in the original PageRank measure).
+ * (instead of the uniform distribution in the original LinkRank measure).
  * The \p reset distribution is used both when restarting randomly with probability
  * <code>1 - damping</code>, and when the walker is forced to restart due to being
  * stuck in a sink vertex (a vertex with no outgoing edges).
  *
  * </para><para>
- * Note that the personalized PageRank of a given vertex depends on the
- * personalized PageRank of all other vertices, so even if you want to calculate
- * the personalized PageRank for only some of the vertices, all of them must be
- * calculated. Requesting the personalized PageRank for only some of the vertices
- * does not result in any performance increase at all.
+ * Note that the LinkRank of a given edge depends on the PageRank
+ * of all vertices, so even if you want to calculate the LinkRank for
+ * only some of the vertices' edges, all of them must be calculated. Requesting
+ * the LinkRank for only some of the vertices' edges does not result in any
+ * performance increase at all.
  *
  * \param graph The graph object.
  * \param algo The PageRank implementation to use. Possible values:
@@ -415,17 +409,13 @@ igraph_error_t igraph_personalized_linkrank_vs(const igraph_t* graph,
  *    expected to be exactly one. Checking this value can be used to diagnose cases
  *    when ARPACK failed to converge to the leading eigenvector.
  *    When using \c IGRAPH_PAGERANK_ALGO_PRPACK, this is always set to 1.0.
- * \param vids The vertex IDs for which the PageRank is returned. This parameter
- *    is only for convenience. Computing PageRank for fewer than all vertices will
+ * \param vids The vertex IDs for which the LinkRank is returned. This parameter
+ *    is only for convenience. Computing LinkRank for fewer than all vertices will
  *    not speed up the calculation.
  * \param directed Boolean, whether to consider the directedness of
  *    the edges. This is ignored for undirected graphs.
  * \param damping The damping factor ("d" in the original paper).
  *    Must be a probability in the range [0, 1]. A commonly used value is 0.85.
- * \param reset The probability distribution over the vertices used when
- *    resetting the random walk. It is either a \c NULL pointer (denoting
- *    a uniform choice that results in the original PageRank measure)
- *    or a vector of the same length as the number of vertices.
  * \param weights Optional edge weights. May be a \c NULL pointer,
  *    meaning unweighted edges, or a vector of non-negative values
  *    of the same length as the number of edges.
@@ -436,18 +426,13 @@ igraph_error_t igraph_personalized_linkrank_vs(const igraph_t* graph,
  *    starts the calculation from a non-random vector calculated based on the
  *    degree of the vertices.
  * \return Error code:
- *         \c IGRAPH_ENOMEM, not enough memory for
- *         temporary data.
- *         \c IGRAPH_EINVVID, invalid vertex ID in
- *         \p vids or an invalid reset vector in \p reset.
+ *         \c IGRAPH_ENOMEM, not enough memory for temporary data.
+ *         \c IGRAPH_EINVVID, invalid vertex ID in \p vids.
  *
  * Time complexity: depends on the input graph, usually it is O(|E|),
  * the number of edges.
- *
- * \sa \ref igraph_pagerank() for the non-personalized implementation,
- * \ref igraph_personalized_pagerank_vs() for a personalized implementation
- * with resetting to specific vertices.
  */
+
 igraph_error_t igraph_personalized_linkrank(const igraph_t* graph,
     igraph_pagerank_algo_t algo, igraph_vector_t* vector,
     igraph_real_t* value, const igraph_vs_t vids,
