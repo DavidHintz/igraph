@@ -383,6 +383,9 @@ igraph_error_t igraph_personalized_pagerank_vs(const igraph_t* graph,
         damping, &reset, weights,
         options));
 
+    IGRAPH_CHECK(igraph_finalize_linkrank(graph, vector, vids,
+    directed, weights));
+
     igraph_vector_destroy(&reset);
     IGRAPH_FINALLY_CLEAN(1);
 
