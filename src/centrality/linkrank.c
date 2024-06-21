@@ -276,7 +276,7 @@ static igraph_error_t pagerank_operator_weighted(igraph_real_t* to, const igraph
  * the number of edges.
  */
 
-igraph_error_t igraph_pagerank(const igraph_t* graph, igraph_pagerank_algo_t algo,
+igraph_error_t igraph_linkrank(const igraph_t* graph, igraph_pagerank_algo_t algo,
     igraph_vector_t* vector,
     igraph_real_t* value, const igraph_vs_t vids,
     igraph_bool_t directed, igraph_real_t damping,
@@ -351,7 +351,7 @@ igraph_error_t igraph_pagerank(const igraph_t* graph, igraph_pagerank_algo_t alg
  * \sa \ref igraph_pagerank() for the non-personalized implementation.
  */
 
-igraph_error_t igraph_personalized_pagerank_vs(const igraph_t* graph,
+igraph_error_t igraph_personalized_linkrank_vs(const igraph_t* graph,
     igraph_pagerank_algo_t algo, igraph_vector_t* vector,
     igraph_real_t* value, const igraph_vs_t vids,
     igraph_bool_t directed, igraph_real_t damping,
@@ -448,7 +448,7 @@ igraph_error_t igraph_personalized_pagerank_vs(const igraph_t* graph,
  * \ref igraph_personalized_pagerank_vs() for a personalized implementation
  * with resetting to specific vertices.
  */
-igraph_error_t igraph_personalized_pagerank(const igraph_t* graph,
+igraph_error_t igraph_personalized_linkrank(const igraph_t* graph,
     igraph_pagerank_algo_t algo, igraph_vector_t* vector,
     igraph_real_t* value, const igraph_vs_t vids,
     igraph_bool_t directed, igraph_real_t damping,
