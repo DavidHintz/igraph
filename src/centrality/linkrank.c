@@ -747,7 +747,7 @@ igraph_error_t igraph_finalize_linkrank(const igraph_t* graph,
 
     igraph_strength(const igraph_t *graph, igraph_vector_t *str,
         const igraph_vs_t vids, igraph_neimode_t IGRAPH_OUT,
-        igraph_bool_t false, const igraph_vector_t *weights);
+        igraph_bool_t true, const igraph_vector_t *weights);
 
     for (i = 0; i < igraph_vector_size(const igraph_vector_t *pageranks); i++) {
         for (j = 0; j < igraph_vector_size(const igraph_vector_t * res); j++) {
